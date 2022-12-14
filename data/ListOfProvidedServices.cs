@@ -16,8 +16,8 @@ namespace lab2
 
         public int ListOfServicesServiceID { get; set; } //зовнішній ключ
 
-        public Invoice? Invoice { get; set; }
+        public virtual Invoice? Invoice { get; set; }
 
-        public ListOfServices? ListOfServices { get; set; }
+        public virtual ListOfServices? ListOfServices { get; set; }
     }
 }

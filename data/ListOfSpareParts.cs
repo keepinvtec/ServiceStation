@@ -19,6 +19,6 @@ namespace lab2
 
         public int InvoiceOrderId { get; set; } //зовнішній ключ
 
-        public Invoice? Invoice { get; set; }
+        public virtual Invoice? Invoice { get; set; }
     }
 }

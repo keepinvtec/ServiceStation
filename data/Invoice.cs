@@ -17,12 +17,12 @@ namespace lab2
 
         public string CarVINcode { get; set; } = null!; //зовнішній ключ
         
-        public Car? Car { get; set; }
+        public virtual Car? Car { get; set; }
 
-        public Client? Client { get; set; }
+        public virtual Client? Client { get; set; }
 
-        public List<ListOfProvidedServices> ListOfProvidedServices { get; } = new List<ListOfProvidedServices>();
+        public virtual List<ListOfProvidedServices> ListOfProvidedServices { get; } = new List<ListOfProvidedServices>();
 
-        public List<ListOfSpareParts> ListOfSpareParts { get; } = new List<ListOfSpareParts>();
+        public virtual List<ListOfSpareParts> ListOfSpareParts { get; } = new List<ListOfSpareParts>();
     }
 }

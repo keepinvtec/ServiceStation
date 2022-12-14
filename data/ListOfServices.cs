@@ -20,6 +20,6 @@ namespace lab2
 
         public double CostOfAnHour { get; set; }
 
-        public List<ListOfProvidedServices> ListOfProvidedServices { get; } = new List<ListOfProvidedServices>();
+        public virtual List<ListOfProvidedServices> ListOfProvidedServices { get; } = new List<ListOfProvidedServices>();
     }
 }

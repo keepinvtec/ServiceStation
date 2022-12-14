@@ -24,6 +24,6 @@ namespace lab2
 
         public int Mileage { get; set; }
 
-        public List<Invoice> Invoices { get; } = new List<Invoice>();
+        public virtual List<Invoice> Invoices { get; } = new List<Invoice>();
     }
 }

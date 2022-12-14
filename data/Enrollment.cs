@@ -17,6 +17,6 @@ namespace lab2
 
         public int ClientPHnumber { get; set; } //зовнішній ключ
 
-        public Client? Client { get; set; }
+        public virtual Client? Client { get; set; }
     }
 }

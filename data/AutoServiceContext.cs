@@ -22,6 +22,8 @@ public class AutoServiceContext : DbContext
 
     public DbSet<Client> Clients { get; set; }
 
+    public DbSet<Worker> Workers { get; set; }
+
     public DbSet<VIPclient> VIPs { get; set; }
 
     public DbSet<ObsoleteClient> ObsoleteClients { get; set; }
@@ -35,6 +37,8 @@ public class AutoServiceContext : DbContext
     public DbSet<ListOfServices> ListsOfServices { get; set; }
 
     public DbSet<ListOfSpareParts> ListsOfSpareParts { get; set; }
+
+    public IQueryable<Car> GetCarsByYearOfProd(int yearofprod) => FromExpression(() => GetCarsByYearOfProd(yearofprod));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -69,7 +73,7 @@ public class AutoServiceContext : DbContext
         modelBuilder.Entity<Invoice>(entity =>
         {
             entity.HasOne(d => d.Client).WithMany(p => p.Invoices)
-            .HasForeignKey(d => d.ClientPHnumber);
+                .HasForeignKey(d => d.ClientPHnumber);
 
             entity.HasOne(d => d.Car).WithMany(p => p.Invoices)
                 .HasForeignKey(d => d.CarVINcode);
@@ -96,8 +100,10 @@ public class AutoServiceContext : DbContext
             entity.Property(x => x.NameOfPart).IsRequired();
             entity.HasAlternateKey(x => x.SPnumber);
             entity.HasOne(d => d.Invoice).WithMany(p => p.ListOfSpareParts)
-    .HasForeignKey(d => d.InvoiceOrderId);
+                .HasForeignKey(d => d.InvoiceOrderId);
         });
+
+        modelBuilder.HasDbFunction(() => GetCarsByYearOfProd(default));
     }
 }
 
