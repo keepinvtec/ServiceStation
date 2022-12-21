@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using lab2;
 
@@ -11,9 +12,11 @@ using lab2;
 namespace lr2ServiceStation.Migrations
 {
     [DbContext(typeof(AutoServiceContext))]
-    partial class AutoServiceContextModelSnapshot : ModelSnapshot
+    [Migration("20221214150400_defense2")]
+    partial class defense2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,9 +57,6 @@ namespace lr2ServiceStation.Migrations
                     b.Property<int>("YearOfProd")
                         .HasColumnType("int");
 
-                    b.Property<int>("YearOfSale")
-                        .HasColumnType("int");
-
                     b.HasKey("VINcode");
 
                     b.HasAlternateKey("VINcode", "EngDisplacement", "Mileage");
@@ -76,8 +76,7 @@ namespace lr2ServiceStation.Migrations
                             Mileage = 12368,
                             Model = "TLX",
                             Price = 123.0,
-                            YearOfProd = 2021,
-                            YearOfSale = 2022
+                            YearOfProd = 2021
                         },
                         new
                         {
@@ -87,9 +86,8 @@ namespace lr2ServiceStation.Migrations
                             Manufacture = "Honda",
                             Mileage = 5429,
                             Model = "MDX",
-                            Price = 114.0,
-                            YearOfProd = 2021,
-                            YearOfSale = 2022
+                            Price = 124.0,
+                            YearOfProd = 2021
                         },
                         new
                         {
@@ -100,8 +98,7 @@ namespace lr2ServiceStation.Migrations
                             Mileage = 2315,
                             Model = "RX",
                             Price = 125.0,
-                            YearOfProd = 2021,
-                            YearOfSale = 0
+                            YearOfProd = 2021
                         },
                         new
                         {
@@ -111,9 +108,8 @@ namespace lr2ServiceStation.Migrations
                             Manufacture = "VAG",
                             Mileage = 42156,
                             Model = "A6",
-                            Price = 190.0,
-                            YearOfProd = 2018,
-                            YearOfSale = 2022
+                            Price = 126.0,
+                            YearOfProd = 2018
                         },
                         new
                         {
@@ -123,9 +119,8 @@ namespace lr2ServiceStation.Migrations
                             Manufacture = "VAG",
                             Mileage = 100344,
                             Model = "Octavia",
-                            Price = 177.0,
-                            YearOfProd = 2016,
-                            YearOfSale = 2021
+                            Price = 127.0,
+                            YearOfProd = 2016
                         },
                         new
                         {
@@ -136,8 +131,7 @@ namespace lr2ServiceStation.Migrations
                             Mileage = 156302,
                             Model = "Touareg",
                             Price = 128.0,
-                            YearOfProd = 2014,
-                            YearOfSale = 2020
+                            YearOfProd = 2014
                         },
                         new
                         {
@@ -148,8 +142,7 @@ namespace lr2ServiceStation.Migrations
                             Mileage = 24571,
                             Model = "Escalade",
                             Price = 129.0,
-                            YearOfProd = 2007,
-                            YearOfSale = 0
+                            YearOfProd = 2007
                         },
                         new
                         {
@@ -160,8 +153,7 @@ namespace lr2ServiceStation.Migrations
                             Mileage = 111567,
                             Model = "Range Rover",
                             Price = 130.0,
-                            YearOfProd = 2013,
-                            YearOfSale = 0
+                            YearOfProd = 2013
                         });
                 });
 

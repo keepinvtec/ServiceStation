@@ -1,4 +1,5 @@
 ﻿using lab2;
+using lr2ServiceStation.Migrations;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
@@ -13,11 +14,6 @@ string connectionString = config.GetConnectionString("DefaultConnection")!;
 var optionsBuilder = new DbContextOptionsBuilder<AutoServiceContext>();
 var options = optionsBuilder.UseSqlServer(connectionString).Options;
 
-//using (AutoServiceContext db = new AutoServiceContext(options))
-//{
-//    db.Database.EnsureDeleted();
-//    db.Database.EnsureCreated();
-//}
 
 //CRUD
 
@@ -461,3 +457,34 @@ var options = optionsBuilder.UseSqlServer(connectionString).Options;
 //{
 //    db.Database.EnsureDeleted();
 //}
+
+//using (AutoServiceContext db = new AutoServiceContext(options))
+//{
+//    var manufacturetochange = "VAG";
+//    var pricetochange = 1.25;
+
+//    var cars = db.Cars.ToList();
+//    foreach (Car car in cars)
+//        Console.WriteLine($"Car manufacture: {car.Manufacture} | Price before: {car.Price}");
+
+//    var test = new defense2class(options);
+//    test.EditCarPrice(manufacturetochange, pricetochange);
+//    foreach (Car car in cars)
+//        db.Entry(car).Reload();
+
+//    Console.WriteLine("\n");
+//    foreach (Car car in cars)
+//        Console.WriteLine($"Car manufacture: {car.Manufacture} | Price after: {car.Price}");
+//}
+
+using (AutoServiceContext db = new AutoServiceContext(options))
+{
+    var cars = (from Car in db.Cars
+                where Car.YearOfSale >= (DateTime.Now.Year - 1)
+                group Car by Car.Manufacture into table
+                select new { Manufacture = table.Key, AvgPrice = table.Average(x => x.Price),
+                             SoldAutos = table.Count()});
+
+    foreach (var car in cars)
+        Console.WriteLine($"Manufacture: {car.Manufacture} | SoldAutos: {car.SoldAutos} | AvgPrice: {car.AvgPrice}");
+}

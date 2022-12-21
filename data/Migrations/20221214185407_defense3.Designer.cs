@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using lab2;
 
@@ -11,9 +12,11 @@ using lab2;
 namespace lr2ServiceStation.Migrations
 {
     [DbContext(typeof(AutoServiceContext))]
-    partial class AutoServiceContextModelSnapshot : ModelSnapshot
+    [Migration("20221214185407_defense3")]
+    partial class defense3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,7 +90,7 @@ namespace lr2ServiceStation.Migrations
                             Manufacture = "Honda",
                             Mileage = 5429,
                             Model = "MDX",
-                            Price = 114.0,
+                            Price = 124.0,
                             YearOfProd = 2021,
                             YearOfSale = 2022
                         },
@@ -111,7 +114,7 @@ namespace lr2ServiceStation.Migrations
                             Manufacture = "VAG",
                             Mileage = 42156,
                             Model = "A6",
-                            Price = 190.0,
+                            Price = 126.0,
                             YearOfProd = 2018,
                             YearOfSale = 2022
                         },
@@ -123,7 +126,7 @@ namespace lr2ServiceStation.Migrations
                             Manufacture = "VAG",
                             Mileage = 100344,
                             Model = "Octavia",
-                            Price = 177.0,
+                            Price = 127.0,
                             YearOfProd = 2016,
                             YearOfSale = 2021
                         },

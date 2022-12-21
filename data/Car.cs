@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.SqlServer.Server;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,10 @@ namespace lab2
         public int YearOfProd { get; set; }
 
         public int Mileage { get; set; }
+
+        public double Price { get; set; }
+
+        public int YearOfSale { get; set; }
 
         public virtual List<Invoice> Invoices { get; } = new List<Invoice>();
     }
