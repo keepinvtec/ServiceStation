@@ -3,7 +3,9 @@ using lr2ServiceStation.Migrations;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 var builder = new ConfigurationBuilder();
 builder.SetBasePath(Directory.GetCurrentDirectory());
@@ -13,6 +15,80 @@ string connectionString = config.GetConnectionString("DefaultConnection")!;
 
 var optionsBuilder = new DbContextOptionsBuilder<AutoServiceContext>();
 var options = optionsBuilder.UseSqlServer(connectionString).Options;
+
+using (AutoServiceContext db = new AutoServiceContext(options))
+{
+    db.Database.EnsureDeleted();
+    db.Database.EnsureCreated();
+}
+
+object locker = new();
+int x = 1;
+
+ThreadStart action = () =>
+{
+    for (int i = 0; i < 100; i++)
+    {
+        Monitor.Enter(locker);
+        try
+        {
+            using (AutoServiceContext db = new AutoServiceContext(options))
+            {
+                db.Clients.Add(new Client { PHnumber = x, FullName = "Client" + 
+                    x + "_" + Thread.CurrentThread.Name });
+                x++;
+                db.SaveChanges();
+            }
+        }
+        finally
+        {
+            Monitor.Exit(locker);
+        }
+    }
+};
+
+ThreadStart reading = () =>
+{
+    lock (locker)
+    {
+        using (AutoServiceContext db = new AutoServiceContext(options))
+        {
+            var clients = db.Clients.ToList();
+            clients.ForEach(x => Console.WriteLine(x.FullName));
+        }
+    }
+};
+
+var thread1 = new Thread(action);
+thread1.Name = "1";
+var thread2 = new Thread(action);
+thread2.Name = "2";
+var thread3 = new Thread(action);
+thread3.Name = "3";
+var thread4 = new Thread(action);
+thread4.Name = "4";
+
+thread1.Start();
+thread2.Start();
+thread3.Start();
+thread4.Start();
+DateTime date = DateTime.Now;
+var actionThreadsAreDone = false;
+while (!actionThreadsAreDone)
+{
+    actionThreadsAreDone = thread1.ThreadState == ThreadState.Stopped &&
+    thread2.ThreadState == ThreadState.Stopped &&
+    thread3.ThreadState == ThreadState.Stopped &&
+    thread4.ThreadState == ThreadState.Stopped;
+};
+DateTime dateafter = DateTime.Now;
+Console.WriteLine(dateafter-date);
+
+thread3 = new Thread(reading);
+thread4 = new Thread(reading);
+thread3.Start();
+thread4.Start();
+
 
 
 //CRUD
@@ -455,11 +531,6 @@ var options = optionsBuilder.UseSqlServer(connectionString).Options;
 
 //using (AutoServiceContext db = new AutoServiceContext(options))
 //{
-//    db.Database.EnsureDeleted();
-//}
-
-//using (AutoServiceContext db = new AutoServiceContext(options))
-//{
 //    var manufacturetochange = "VAG";
 //    var pricetochange = 1.25;
 
@@ -477,14 +548,14 @@ var options = optionsBuilder.UseSqlServer(connectionString).Options;
 //        Console.WriteLine($"Car manufacture: {car.Manufacture} | Price after: {car.Price}");
 //}
 
-using (AutoServiceContext db = new AutoServiceContext(options))
-{
-    var cars = (from Car in db.Cars
-                where Car.YearOfSale >= (DateTime.Now.Year - 1)
-                group Car by Car.Manufacture into table
-                select new { Manufacture = table.Key, AvgPrice = table.Average(x => x.Price),
-                             SoldAutos = table.Count()});
+//using (AutoServiceContext db = new AutoServiceContext(options))
+//{
+//    var cars = (from Car in db.Cars
+//                where Car.YearOfSale >= (DateTime.Now.Year - 1)
+//                group Car by Car.Manufacture into table
+//                select new { Manufacture = table.Key, AvgPrice = table.Average(x => x.Price),
+//                             SoldAutos = table.Count()});
 
-    foreach (var car in cars)
-        Console.WriteLine($"Manufacture: {car.Manufacture} | SoldAutos: {car.SoldAutos} | AvgPrice: {car.AvgPrice}");
-}
+//    foreach (var car in cars)
+//        Console.WriteLine($"Manufacture: {car.Manufacture} | SoldAutos: {car.SoldAutos} | AvgPrice: {car.AvgPrice}");
+//}

@@ -75,18 +75,13 @@ public class AutoServiceContext : DbContext
         modelBuilder.Entity<Enrollment>(entity =>
         {
             entity.Property(x => x.DateOfEnroll).HasDefaultValueSql("GETDATE()");
-            entity.HasData(
-                new Enrollment { EnrollmentId = 1, ClientPHnumber = 1 }
-                );
             entity.HasOne(d => d.Client).WithMany(p => p.Enrollments)
                 .HasForeignKey(d => d.ClientPHnumber);
         });
 
         modelBuilder.Entity<Client>(entity =>
         {
-            entity.HasData(
-                new Client { PHnumber = 1, FullName = "Tom Cruise" }
-                );
+
         });
 
         modelBuilder.Entity<Invoice>(entity =>
