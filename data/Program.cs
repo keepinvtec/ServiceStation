@@ -16,38 +16,90 @@ string connectionString = config.GetConnectionString("DefaultConnection")!;
 var optionsBuilder = new DbContextOptionsBuilder<AutoServiceContext>();
 var options = optionsBuilder.UseSqlServer(connectionString).Options;
 
+object locker = new();
+int x = 1;
+
 using (AutoServiceContext db = new AutoServiceContext(options))
 {
     db.Database.EnsureDeleted();
     db.Database.EnsureCreated();
 }
 
-object locker = new();
-int x = 1;
 
-ThreadStart action = () =>
+Action action = async () =>
 {
-    for (int i = 0; i < 100; i++)
+    Monitor.Enter(locker);
+    try
     {
-        Monitor.Enter(locker);
-        try
+        using (AutoServiceContext db = new AutoServiceContext(options))
         {
-            using (AutoServiceContext db = new AutoServiceContext(options))
+            for (int i = 0; i < 100; i++)
             {
-                db.Clients.Add(new Client { PHnumber = x, FullName = "Client" + 
-                    x + "_" + Thread.CurrentThread.Name });
+                await db.Clients.AddAsync(new Client
+                {
+                    PHnumber = x,
+                    FullName = "Client" +
+                    x + "_" + Task.CurrentId.ToString()
+                });
                 x++;
-                db.SaveChanges();
             }
+            db.SaveChanges();
         }
-        finally
-        {
-            Monitor.Exit(locker);
-        }
+    }
+    finally
+    {
+        Monitor.Exit(locker);
     }
 };
 
-ThreadStart reading = () =>
+Action reading = () =>
+{
+    using (AutoServiceContext db = new AutoServiceContext(options))
+    {
+        var clients = db.Clients.ToListAsync();
+        clients.Result.ForEach(x => Console.WriteLine(x.FullName));
+    }
+};
+
+Task task1 = new Task(action);
+Task task2 = new Task(action);
+Task task3 = new Task(reading);
+task1.Start();
+task2.Start();
+task1.Wait();
+task2.Wait();
+task3.Start();
+task3.Wait();
+
+
+
+ThreadStart action1 = () =>
+{
+    Monitor.Enter(locker);
+    try
+    {
+        using (AutoServiceContext db = new AutoServiceContext(options))
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                db.Clients.Add(new Client
+                {
+                    PHnumber = x,
+                    FullName = "Client" +
+                    x + "_" + Thread.CurrentThread.Name
+                });
+                x++;
+            }
+            db.SaveChanges();
+        }
+    }
+    finally
+    {
+        Monitor.Exit(locker);
+    }
+};
+
+ThreadStart reading1 = () =>
 {
     lock (locker)
     {
@@ -59,13 +111,13 @@ ThreadStart reading = () =>
     }
 };
 
-var thread1 = new Thread(action);
+var thread1 = new Thread(action1);
 thread1.Name = "1";
-var thread2 = new Thread(action);
+var thread2 = new Thread(action1);
 thread2.Name = "2";
-var thread3 = new Thread(action);
+var thread3 = new Thread(action1);
 thread3.Name = "3";
-var thread4 = new Thread(action);
+var thread4 = new Thread(action1);
 thread4.Name = "4";
 
 thread1.Start();
@@ -82,10 +134,10 @@ while (!actionThreadsAreDone)
     thread4.ThreadState == ThreadState.Stopped;
 };
 DateTime dateafter = DateTime.Now;
-Console.WriteLine(dateafter-date);
+Console.WriteLine(dateafter - date);
 
-thread3 = new Thread(reading);
-thread4 = new Thread(reading);
+thread3 = new Thread(reading1);
+thread4 = new Thread(reading1);
 thread3.Start();
 thread4.Start();
 
